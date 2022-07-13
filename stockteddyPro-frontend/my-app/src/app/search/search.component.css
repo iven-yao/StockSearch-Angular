@@ -1,0 +1,16 @@
+.border-3 {
+    border-width: 3px!important;
+}
+
+.form-control:focus {
+    box-shadow: none;
+}
+
+#group-outer {
+    border-color: #2224ab!important;
+    max-width: 500px;
+}
+
+.text-darkblue {
+    color: #2224ab!important;
+}

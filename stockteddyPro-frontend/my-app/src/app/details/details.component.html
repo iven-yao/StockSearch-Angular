@@ -1,0 +1,243 @@
+<app-search [searchValue]="symbol"></app-search>
+<mat-spinner
+    *ngIf="
+        (!quote 
+        || !profile2 
+        || !hourlyCandle 
+        || !peers 
+        || !topNews 
+        || !recommendation 
+        || !social 
+        || !earnings) 
+        && validTicker
+    "
+    class="my-5 mx-auto"
+></mat-spinner>
+
+<div class="container w-75 mx-auto my-5 pb-5"
+    *ngIf="
+        (quote 
+        && profile2 
+        && hourlyCandle 
+        && peers 
+        && topNews 
+        && recommendation 
+        && social 
+        && earnings 
+        && validTicker)
+    "
+>
+
+    <div *ngIf="showBoughtAlert" class="alert alert-success alert-dismissible text-center" role="alert" id="alert">
+        {{alertMsg_trans}}
+        <button type="button" class="close" (click)="dismissBoughtAlert()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div *ngIf="showStarAlert" class="alert alert-dismissible text-center" [ngClass]="{'alert-success':isInWatchlist,'alert-danger':!isInWatchlist}" role="alert" id="alert">
+        {{alertMsg_star}}
+        <button type="button" class="close" (click)="dismissStarAlert()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="row align-baseline mb-5">
+        <!-- Ticker/Name/Exchange/Buy,Sell -->
+        <div class="col-4 m-0">
+            <p class="h2 m-0">{{profile2.ticker}}
+                <span *ngIf="isInWatchlist" class="fa fa-star text-warning" (click)="clickStar()"></span>
+                <span *ngIf="!isInWatchlist" class="fa fa-star-o" (click)="clickStar()"></span>
+            </p>
+            <p class="h4 text-muted">{{profile2.name}}</p>
+            <p class="">{{profile2.exchange}}</p>
+            <button type="button" class="btn btn-success"
+                (click)="openTransactionModal(profile2.ticker, profile2.name, quote.c, true)"
+            >Buy</button>
+            <button *ngIf="isSellable" type="button" class="btn btn-danger mx-2"
+                (click)="openTransactionModal(profile2.ticker, profile2.name, quote.c, false)"
+            >Sell</button>
+        </div>
+        <!-- Logo -->
+        <div class="col-4 text-center">
+            <img src={{profile2.logo}} class="mx-auto" style="width: 100px;" alt="...">
+        </div>
+        <!-- Close Price/Change/Current Time -->
+        <div class="col-4 text-right" [ngClass]="{'text-success':quote.d>0, 'text-danger':quote.d<0}">
+            <p class="h2 m-0">{{quote.c | number:'1.2-2'}}</p>
+            <p class="h4">
+                <span class="fa" [ngClass]="{'fa-caret-up':quote.d>0,'fa-caret-down':quote.d<0}"></span>
+                {{quote.d | number:'1.2-2'}} ({{quote.dp  | number:'1.2-2'}}%)
+            </p>
+            <p class="text-dark">{{currentTime}}</p>
+        </div>
+    </div>
+    <!-- Market Status Open/Close -->
+    <div class="row text-center">
+        <div class="col">
+            <p *ngIf="marketOpen" class="font-weight-bold text-success">Market is Open</p>
+            <p *ngIf="!marketOpen" class="font-weight-bold text-danger">Market Closed on {{closedTime}}</p>
+        </div>
+    </div>
+    <!-- Tabs -->
+    <mat-tab-group mat-stretch-tabs>
+        <!-- Summary Tab -->
+        <mat-tab label="Summary"> 
+            <ng-template matTabContent>
+                <div class="container">
+                    <div class="row mt-3">
+                        <!-- price & company -->
+                        <div class="col-sm-12 col-md-6">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>High Price:</th>
+                                        <td class="text-right">{{quote.h | number:'1.2-2'}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Low Price:</th>
+                                        <td class="text-right">{{quote.l | number:'1.2-2'}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Open Price:</th>
+                                        <td class="text-right">{{quote.o | number:'1.2-2'}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Prev. Price:</th>
+                                        <td class="text-right">{{quote.pc | number:'1.2-2'}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <p class="h5 text-center"><u>About the company</u></p>
+                            <p><b>IPO Start Date</b>: {{profile2.ipo}}</p>
+                            <p><b>Industry</b>: {{profile2.finnhubIndustry}}</p>
+                            <p><b>Webpage</b>: <a href={{profile2.weburl}} target="_blank">{{profile2.weburl}}</a></p>
+                            <p><b>Company peers</b>:<br></p>
+                            <span *ngFor="let peer of peers">
+                                <a routerLink="/search/{{peer}}">{{peer}},</a>
+                            </span>
+                        </div>
+                        <!-- chart -->
+                        <div class="col-sm-12 col-md-6">
+                            <highcharts-chart
+                                [Highcharts]="Highcharts"
+                                [constructorType]="'stockChart'"
+                                [options]="hourlyChartOptions"
+                                style="display: block; height: 100%; width: 100%;"
+                            >
+                            </highcharts-chart>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+        </mat-tab>
+
+        <!-- Top News Tab -->
+        <mat-tab label="Top News">
+            <div class="container">
+                <div class="row mt-2">
+                    <div
+                        class="col-md-6 col-sm-12 m-2 mx-auto" 
+                        *ngFor="let news of topNews"
+                    >
+                        <div class="card" style="min-height: 150px;">
+                            <div class="card-body row" (click)="openNewsDetail(news)" style="cursor: pointer;">
+                                <div class="col-md-2 m-0 p-0">
+                                    <img
+                                        class="card-img m-0"
+                                        src="{{news.image}}"
+                                        alt=""
+                                    >
+                                </div>
+                                <div class="col">
+                                    <span class="card-title">{{news.headline}}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </mat-tab>
+
+        <!-- Charts Tab -->
+        <mat-tab label="Charts"> 
+            <ng-template matTabContent>
+                <div class="container">
+                    <div class="row mt-3">
+                        <highcharts-chart
+                            [Highcharts]="Highcharts"
+                            [constructorType]="'stockChart'"
+                            [options]="historicalChartOptions"
+                            style="display: block; width: 100%; min-height: 600px;"
+                        >
+                        </highcharts-chart>
+                    </div>
+                </div>
+            </ng-template>
+        </mat-tab>
+
+        <!-- Insights Tab -->
+        <mat-tab label="Insights">
+            <ng-template matTabContent>
+                <div class="container text-center">
+                    <div class="row my-2">
+                        <div class="col-12">
+                            <p class="h4">Social Sentiments</p>
+                        </div>
+                    </div>
+                    <table class="table mx-auto" style="max-width: 500px;">
+                        <thead>
+                            <tr class="table-secondary">
+                                <th colspan="2">{{profile2.name}}</th>
+                                <th>Reddit</th>
+                                <th>Twitter</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th colspan="2" class="table-secondary">Total Mentions</th>
+                                <td class="table-light">{{redditTotalMention}}</td>
+                                <td class="table-light">{{twitterTotalMention}}</td>
+                            </tr>
+                            <tr>
+                                <th colspan="2" class="table-secondary">Positive Mentions</th>
+                                <td class="table-light">{{redditPosMention}}</td>
+                                <td class="table-light">{{twitterPosMention}}</td>
+                            </tr>
+                            <tr>
+                                <th colspan="2" class="table-secondary">Negative Mentions</th>
+                                <td class="table-light">{{redditNegMention}}</td>
+                                <td class="table-light">{{twitterNegMention}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="row">
+                        <div class="col-12 col-md-6 p-1">
+                            <highcharts-chart
+                                [Highcharts]="Highcharts"
+                                [options]="trendsChartOptions"
+                                style="display: block; width: 100%;"
+                            >
+                            </highcharts-chart>
+                        </div>
+                        <div class="col-12 col-md-6 p-1">
+                            <highcharts-chart
+                                [Highcharts]="Highcharts"
+                                [options]="epsChartOptions"
+                                style="display: block; width: 100%;"
+                            >
+                            </highcharts-chart>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+        </mat-tab>
+    </mat-tab-group>
+      
+</div>
+
+<!-- invalid ticker -->
+<div *ngIf="profile2 && !validTicker" class="container my-5">
+    <div class="alert alert-danger text-center text-dark" role="alert">
+        No data found. Please enter valid Ticker
+    </div>
+</div>

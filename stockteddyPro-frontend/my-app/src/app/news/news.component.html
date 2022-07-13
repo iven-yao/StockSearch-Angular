@@ -1,0 +1,40 @@
+<div class="modal-header">
+    <div class="modal-title">
+        <p class="h3">{{news.source}}</p>
+        <p class="h5 text-muted">{{dateString}}</p>
+    </div>
+    <button type="button" class="close" aria-label="Close" (click)="newsModalService.dismiss()">
+        <span>&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <p class="h4">{{news.headline}}</p>
+    <p class="h6">{{news.summary}}</p>
+    <p class="h6">
+        <small class="text-muted">
+            For more details click 
+            <a style="color: #007BFF; cursor: pointer;" (click)="openLink(news.url)">here</a>
+        </small>
+    </p>
+    <div class="card m-2">
+        <div class="card-body">
+            <div class="row mx-1">Share</div>
+            <div class="row mx-1">
+                <a class="twitter-share-button btn btn-social btn-twitter p-0"
+                    href="{{shareToTwitter}}"
+                    target="_blank"
+                    data-size="large"
+                >
+                    <i class="fa fa-2x fa-twitter" style="color:#1DA1F2;"></i>
+                </a>
+                <a class="fb-share-button btn btn-social p-0"
+                    href="{{shareToFB}}"
+                    target="_blank"
+                    data-size="large"
+                >
+                    <i class="fa fa-2x fa-facebook-square" style="color: #4267B2;"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

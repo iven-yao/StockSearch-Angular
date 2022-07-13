@@ -1,0 +1,52 @@
+<div class="container my-4">
+    <p class="h3 mb-3">My Portfolio</p>
+    <p class="h5 mb-4">Money in Wallet: ${{money | number:'1.2-2'}}</p>
+    <div class="container">
+        <div *ngIf="isEmpty" class="row">
+            <div class="col-12 alert alert-warning text-center" role="alert">
+                Currently you don't have any stock.
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12 m-2" *ngFor="let info of allInfo">
+                <div class="card">
+                    <div class="card-header">
+                        <p class="h4">{{info.ticker}} &nbsp;<small class="text-muted">{{info.name}}</small></p>
+                    </div>
+                    <div class="card-body">
+                        <div class="row h6">
+                            <div class="col-sm-3">
+                                <p>Quantity:</p>
+                                <p>Avg. Cost/ Share:</p>
+                                <p>Total Cost:</p>
+                            </div>
+                            <div class="col-sm-3 text-right">
+                                <p>{{info.quantity| number:'1.2-2'}}</p>
+                                <p>{{info.avgCost| number:'1.2-2'}}</p>
+                                <p>{{info.totalCost| number:'1.2-2'}}</p>
+                            </div>
+                            <div class="col-sm-3">
+                                <p>Change:</p>
+                                <p>Current Price:</p>
+                                <p>Market Value:</p>
+                            </div>
+                            <div class="col-sm-3 text-right" [ngClass]="{'text-success': info.change>0, 'text-danger': info.change<0}">  
+                                <p><span class="fa" [ngClass]="{'fa-caret-up':info.change>0,'fa-caret-down':info.change<0}"></span>&nbsp;{{info.change| number:'1.2-2'}}</p>
+                                <p>{{info.c| number:'1.2-2'}}</p>
+                                <p>{{info.marketValue| number:'1.2-2'}}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer text-right">
+                        <button type="button" class="btn btn-primary mx-2"
+                            (click)="openTransactionModal(info.ticker, info.name, info.c, true)"
+                        >Buy</button>
+                        <button type="button" class="btn btn-danger mx-2"
+                            (click)="openTransactionModal(info.ticker, info.name, info.c, false)"
+                        >Sell</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

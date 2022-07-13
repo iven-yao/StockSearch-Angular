@@ -1,0 +1,33 @@
+<div class="text-center my-4">
+    <p class="h2">
+        STOCK SEARCH
+    </p>
+</div>
+
+<form id="symbol-search" (ngSubmit)="onSubmit(searchForm.value)" [formGroup]="searchForm" class="mx-auto w-50"> 
+    <div class="input-group align-baseline rounded-pill border border-3 mx-auto" id="group-outer">
+        <input class="bg-transparent form-control border-0 ml-3 p-0" placeholder="Enter stock ticker symbol" 
+            type="text" formControlName="searchValue" matInput [matAutocomplete]="auto">
+        <mat-autocomplete #auto="matAutocomplete"  (optionSelected)="onSubmit(searchForm.value)">
+            <mat-option *ngIf="isLoading" class="is-loading"><mat-spinner diameter="30"></mat-spinner></mat-option>
+            <ng-container *ngIf="!isLoading">
+                <mat-option *ngFor="let result of filteredSearchResult" [value]="result.symbol"> 
+                    <span>{{ result.symbol }}</span> <small> | {{result.description}}</small>
+                </mat-option>
+            </ng-container>
+        </mat-autocomplete>
+        <button class="btn shadow-none" type="submit"><span class="fa fa-search text-darkblue"></span></button>
+        <button class="btn shadow-none" type="button" (click)="clearInput()"><span class="fa fa-times text-darkblue"></span></button>
+    </div>
+</form>
+
+<!-- empty ticker -->
+<div *ngIf="emptyInput" class="container my-5">
+    <div class="alert alert-danger alert-dismissible text-center" role="alert" id="alert">
+        Please enter a valid Ticker
+        <button type="button" class="close" (click)="dismissAlert()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+</div>
+

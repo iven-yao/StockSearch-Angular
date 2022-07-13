@@ -1,0 +1,19 @@
+<nav class="navbar navbar-expand-md navbar-dark sticky-top">
+    <div class="navbar-brand">Stock Search</div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-toggler-block">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbar-toggler-block">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link ml-3" routerLink="search/{{searchDest}}" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Search</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link ml-3" routerLink="watchlist" routerLinkActive="active">Watchlist</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link ml-3" routerLink="portfolio" routerLinkActive="active">Portfolio</a>
+            </li>
+        </ul>
+    </div>
+</nav>
